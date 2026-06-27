@@ -8,7 +8,7 @@ revisionHistoryLimit: 1
 
 image:
   repository: "pihole/pihole"
-  tag: v4.4
+  tag: 2026.06.0
   pullPolicy: IfNotPresent
 
 serviceDns:
@@ -42,7 +42,7 @@ probes:
     timeoutSeconds: 5
 
 persistentVolumeClaim:
-  enabled: true
+  enabled: false
   existingClaim: pihole-pvc
   emptyDir: false
   storageClassName: longhorn
@@ -51,6 +51,14 @@ persistentVolumeClaim:
   skipuninstall: true
 
 # Administrator password when not using an existing secret (see below)
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
 adminPassword: "admin"
 
 # Use an existing secret for the admin password.
