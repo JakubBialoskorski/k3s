@@ -1,5 +1,5 @@
 `kubectl create namespace pihole`
 
-`kubectl apply -f pvc.yaml`
+`kubectl apply -f misc/pihole/statefulset.yaml`
 
-`helm install pihole --values values.yaml -n pihole mojo2600/pihole`
+PiHole runs as a StatefulSet with 3 replicas, each with its own PVC (longhorn). Adlists and whitelist are managed via the ConfigMap embedded in `statefulset.yaml`.
