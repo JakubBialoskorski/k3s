@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pihole
+  namespace: pihole
+spec:
+  serviceName: pihole-headless
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pihole
+  template:
+    metadata:
+      labels:
+        app: pihole
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: pihole
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: pihole
+          image: pihole/pihole:2026.06.0
+          env:
+            - name: TZ
+              value: "UTC"
+            - name: WEBPASSWORD
+              value: "admin"
+            - name: DNS1
+              value: "208.67.222.123"
+            - name: DNS2
+              value: "208.67.220.123"
+          ports:
+            - containerPort: 80
+              name: http
+            - containerPort: 53
+              name: dns-tcp
+              protocol: TCP
+            - containerPort: 53
+              name: dns-udp
+              protocol: UDP
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          volumeMounts:
+            - name: pihole-data
+              mountPath: /etc/pihole
+            - name: pihole-dnsmasq
+              mountPath: /etc/dnsmasq.d
+  volumeClaimTemplates:
+    - metadata:
+        name: pihole-data
+      spec:
+        accessModes: [ReadWriteOnce]
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 4Gi
+    - metadata:
+        name: pihole-dnsmasq
+      spec:
+        accessModes: [ReadWriteOnce]
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 500Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pihole-headless
+  namespace: pihole
+spec:
+  clusterIP: None
+  selector:
+    app: pihole
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pihole-dns
+  namespace: pihole
+  annotations:
+    metallb.universe.tf/address-pool: default
+    metallb.universe.tf/allow-shared-ip: pihole-svc
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.20.222
+  selector:
+    app: pihole
+  ports:
+    - name: dns-tcp
+      port: 53
+      targetPort: dns-tcp
+      protocol: TCP
+    - name: dns-udp
+      port: 53
+      targetPort: dns-udp
+      protocol: UDP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pihole-web
+  namespace: pihole
+  annotations:
+    metallb.universe.tf/address-pool: default
+    metallb.universe.tf/allow-shared-ip: pihole-svc
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.20.222
+  selector:
+    app: pihole
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
