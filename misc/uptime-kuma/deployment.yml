@@ -21,6 +21,13 @@ spec:
       containers:
         - name: app
           image: louislam/uptime-kuma:2.4.0
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
           ports:
             - containerPort: 3001
           volumeMounts:

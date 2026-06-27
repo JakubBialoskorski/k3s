@@ -25,6 +25,13 @@ spec:
         - --agree-eula
         image: docker.io/criticalstack/quake:v1.0.7
         name: server
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
         ports:
         - containerPort: 8080
         readinessProbe:
@@ -43,6 +50,13 @@ spec:
         - --seed-content-url=http://content.quakejs.com
         image: docker.io/criticalstack/quake:v1.0.7
         name: content-server
+        resources:
+          requests:
+            cpu: 25m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
         ports:
         - containerPort: 9090
         volumeMounts:
