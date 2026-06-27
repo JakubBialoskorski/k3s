@@ -8,7 +8,7 @@ revisionHistoryLimit: 1
 
 image:
   repository: "pihole/pihole"
-  tag: v4.4
+  tag: 2026.06.0
   pullPolicy: IfNotPresent
 
 serviceDns:
@@ -42,7 +42,7 @@ probes:
     timeoutSeconds: 5
 
 persistentVolumeClaim:
-  enabled: true
+  enabled: false
   existingClaim: pihole-pvc
   emptyDir: false
   storageClassName: longhorn
