@@ -1,4 +1,4 @@
-# kubernetes
+# k3s
 
 Various Helm charts and YAMLs, tested mostly on [K3s](https://rancher.com/products/k3s/) cluster.
 They use [Longhorn](https://longhorn.io/) as a storage solution.
